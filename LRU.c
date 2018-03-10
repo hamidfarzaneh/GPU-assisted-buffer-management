@@ -1,13 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <openssl/md5.h>
+#include <fcntl.h>
+ 
+/* Not technically required, but needed on some UNIX distributions */
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+ 
+/* Not technically required, but needed on some UNIX distributions */
+#include <sys/types.h>
+#include <sys/stat.h>
+
+
 #define PAGE_SIZE 4096
+#define QUEUE_SIZE 1000
+#define SUPPORTED_PAGE_COUNT_TO_SAVE 1000000
 
 // A Qnode 
 typedef struct Qnode{
-    char data[PAGE_SIZE] ; // the chunk of the buffer . 
+    char* data ; // the chunk of the buffer . 
     struct Qnode* next;
     struct Qnode* prev;
-    unsigned int pageNumber ;
+    unsigned int page_id ;
 }Qnode ;
 
 typedef struct Queue {
@@ -16,16 +35,22 @@ typedef struct Queue {
     Qnode *front , *rear ;
 }Queue;
 
+
 typedef struct Hash {
     int capacity ;
     Qnode ** array ;
 
 } Hash ;
 
-Qnode* createQueueNode(int pageNumber){
+Queue* pageQueue ;
+Hash* hashTable ;
+
+
+Qnode* createQueueNode(int page_id, char * page_data ){
     Qnode* newNode = (Qnode *) malloc(sizeof(Qnode));
     newNode->next = newNode->prev = NULL;
-    newNode->pageNumber = pageNumber;
+    newNode->page_id= page_id;
+    newNode->data = page_data;
     return newNode ;
 }
 
@@ -37,7 +62,7 @@ Queue* createQueue(int numberOfFrames){
     return newQueue ;
 }
 
-Hash * createHash(int capacity){
+Hash * createHashTable(int capacity){
     Hash* newHashTable = (Hash*) malloc(sizeof(Hash));
     newHashTable->array = (Qnode **) malloc(sizeof(Qnode*) * capacity);
 
@@ -68,78 +93,104 @@ void dequeue(Queue* queue){
     queue->rear =queue->rear->prev;
     if(queue->rear)
         queue->rear->next = NULL;
+    free(temp->data);
     free(temp);
     queue->filledFramesCount--;
     
 }
 
-void Enqueue (Queue* queue ,Hash * hashTable , unsigned pageNumber){
-    //if all frames are full , remove the page at the rear 
-    if(AreAllFramesFull(queue)){
-        // remove page from hash
-        hashTable->array[queue->rear->pageNumber] = NULL;
-        dequeue(queue);
+
+void putAPageToTheRearOfTheQueue(Queue * queue ,Qnode* requestedPage){
+    requestedPage->prev->next = requestedPage -> next ;
+    if(requestedPage->next){
+        requestedPage->next->prev = requestedPage->prev ;
+    }
+    if(requestedPage == queue->rear){
+        queue->rear = requestedPage->prev ; 
+        queue->rear->next = NULL;
+    }
+    requestedPage->next = queue->front ;
+    requestedPage->prev = NULL;
+    requestedPage->next->prev = requestedPage ;
+
+    queue->front =requestedPage ; 
+
+}
+
+void addPageToTheHashTable(int page_id ,char * page_data){
+    Qnode * temp = hashTable->array[page_id] ; 
+    if(temp != NULL){
+        printf("OH NO! there is a conflict , the page already exists!\n");
+        return ;
+    } else {
+        temp = createQueueNode(page_id , page_data);
+        hashTable->array[page_id] = temp; 
+    }
+    if(AreAllFramesFull(pageQueue)){
+        // remove least recently used page from queue 
+        hashTable->array[pageQueue->rear->page_id] = NULL;
+        dequeue(pageQueue);
     }
     // create a new node with given page number ,
     // And add the new node to the front of queue 
-    Qnode* temp = createQueueNode(pageNumber);
-    temp->next = queue->front;
+    temp->next = pageQueue->front;
 
-    if(isQueueEmpty(queue)){
-        queue->rear = queue->front = temp ;
+    if(isQueueEmpty(pageQueue)){
+        pageQueue->rear = pageQueue->front = temp ;
     } else {
-        queue->front->prev = temp ;
-        queue->front = temp ;
+        pageQueue->front->prev = temp ;
+        pageQueue->front = temp ;
     }
     // add page entry to hash also 
-    hashTable->array[pageNumber] = temp ;
-    queue->filledFramesCount++;
-
-
+    hashTable->array[page_id] = temp ;
+    pageQueue->filledFramesCount++;
+    
 }
-
-void ReferencePage(Queue * queue ,Hash* hashTable , unsigned pageNumber){
-    Qnode* requestedPage = hashTable->array[pageNumber];
-   
+char * getPageFromCache(int page_id){
+    Qnode* requestedPage= hashTable->array[page_id] ;
     if(requestedPage == NULL){
-        Enqueue(queue , hashTable , pageNumber);
-    // page is there , but not at the front 
-    } else if (requestedPage != queue->front){
-        requestedPage->prev->next = requestedPage -> next ;
-        if(requestedPage->next){
-            requestedPage->next->prev = requestedPage->prev ;
-        }
-        if(requestedPage == queue->rear){
-            queue->rear = requestedPage->prev ; 
-            queue->rear->next = NULL;
-        }
-        requestedPage->next = queue->front ;
-        requestedPage->prev = NULL;
-        requestedPage->next->prev = requestedPage ;
+        // CACHE MISS!!!
+        // get the data from disk!
 
-        queue->front =requestedPage ; 
+        return NULL;
+
+    } else {
+        // put the page to the rear of the cache 
+        putAPageToTheRearOfTheQueue(pageQueue , requestedPage);
+        return requestedPage->data;
+
 
     }
-
 }
-
 int main()
 {
     // Let cache can hold 4 pages
-    Queue* q = createQueue( 4 );
- 
-    // Let 10 different pages can be requested (pages to be
-    // referenced are numbered from 0 to 9
-    Hash* hash = createHash( 10 );
- 
-    // // Let us refer pages 1, 2, 3, 1, 4, 5
-    ReferencePage( q, hash, 1);
-    printf ("%d ", q->front->pageNumber);
-    ReferencePage( q, hash, 3);
-    ReferencePage( q, hash, 3);
-    ReferencePage( q, hash, 1);
-    ReferencePage( q, hash, 4);
-    ReferencePage( q, hash, 5);
+    //char * buffer[PAGE_SIZE] ; 
+
+    pageQueue = createQueue( QUEUE_SIZE );
+    hashTable = createHashTable( SUPPORTED_PAGE_COUNT_TO_SAVE);
+    
+
+    int n;
+    MD5_CTX c;
+    char buf[512];
+    ssize_t bytes;
+    unsigned char out[MD5_DIGEST_LENGTH];
+
+    MD5_Init(&c);
+    
+    int fileDes = open("./temp/tempfile" , O_RDONLY);
+    char * temp = "tempfile";
+    strcpy(buf,temp);
+        MD5_Update(&c, buf, bytes);
+
+    MD5_Final(out, &c);
+
+    for(n=0; n<MD5_DIGEST_LENGTH; n++)
+        printf("%02x", out[n]);
+    printf("\n");
+    
+
  
  
     return 0;
