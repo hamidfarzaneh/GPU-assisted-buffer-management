@@ -1,14 +1,21 @@
 #include <stdio.h>
-#include <unistd.h> 
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+ 
+/* Not technically required, but needed on some UNIX distributions */
+#include <sys/types.h>
+#include <sys/stat.h>
+
 
 int PAGE_SIZE ;
 int main(int argc , char ** argv){
+    char * buffer = (char *) malloc (1000);
+    int fileDes = open("./temp/tempfile" , O_RDONLY);
 
-	sysconf(_SC_PAGESIZE);
-    PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
-    printf("current page size %d Bytes\n" , PAGE_SIZE);
-    char * myBufferPtr = " Greetings , Professor Falken .\ n " ;
-
-    printf("%016p\n" , &(myBufferPtr));
     return 0 ;
+}
+
+int readPageFromFile(int fd, char *buffer){
+    return read(fd , buffer , PAGE_SIZE);
 }
