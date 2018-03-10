@@ -19,3 +19,7 @@ typedef struct Hash {
     Qnode ** array ;
 
 } Hash ;
+
+Qnode* createQueue(int numberOfFrames){
+    
+}
