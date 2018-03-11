@@ -16,34 +16,20 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "LRU.h"
 
-#define PAGE_SIZE 4096
-#define QUEUE_SIZE 1000
-#define SUPPORTED_PAGE_COUNT_TO_SAVE 1000000
+int getAvailableIDForHashTable(){
+    if(stackPointer>0){
+        return --stackPointer;
+    } else {
+        return biggestID++;
+    }
+    
+}
+void addIDToStack(int inputID){
+    stackArray[stackPointer++] = inputID;
+}
 
-// A Qnode 
-typedef struct Qnode{
-    char* data ; // the chunk of the buffer . 
-    struct Qnode* next;
-    struct Qnode* prev;
-    unsigned int page_id ;
-}Qnode ;
-
-typedef struct Queue {
-    unsigned int filledFramesCount;
-    unsigned int numberOfFrames ;
-    Qnode *front , *rear ;
-}Queue;
-
-
-typedef struct Hash {
-    int capacity ;
-    Qnode ** array ;
-
-} Hash ;
-
-Queue* pageQueue ;
-Hash* hashTable ;
 
 
 Qnode* createQueueNode(int page_id, char * page_data ){
@@ -93,6 +79,7 @@ void dequeue(Queue* queue){
     queue->rear =queue->rear->prev;
     if(queue->rear)
         queue->rear->next = NULL;
+    addIDToStack(temp->page_id);
     free(temp->data);
     free(temp);
     queue->filledFramesCount--;
@@ -117,7 +104,8 @@ void putAPageToTheRearOfTheQueue(Queue * queue ,Qnode* requestedPage){
 
 }
 
-void addPageToTheHashTable(int page_id ,char * page_data){
+int addPageToTheHashTable(char * page_data){
+    int page_id = getAvailableIDForHashTable();
     Qnode * temp = hashTable->array[page_id] ; 
     if(temp != NULL){
         printf("OH NO! there is a conflict , the page already exists!\n");
@@ -144,6 +132,8 @@ void addPageToTheHashTable(int page_id ,char * page_data){
     // add page entry to hash also 
     hashTable->array[page_id] = temp ;
     pageQueue->filledFramesCount++;
+
+    return page_id;
     
 }
 char * getPageFromCache(int page_id){
@@ -162,6 +152,7 @@ char * getPageFromCache(int page_id){
 
     }
 }
+
 int main()
 {
     // Let cache can hold 4 pages
