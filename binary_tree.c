@@ -12,7 +12,7 @@ int CmpStr(const char *a, const char *b)
 }
 
 //inserts elements into the tree
-void innner_insert(char* key,struct page_id_link_list* page_id, struct node** leaf, Compare cmp)
+void inner_insert(char* key,struct page_id_link_list* page_id, struct node** leaf, Compare cmp)
 {
     int res;
     if( *leaf == NULL ) {
@@ -25,16 +25,16 @@ void innner_insert(char* key,struct page_id_link_list* page_id, struct node** le
     } else {
         res = cmp (key, (*leaf)->name_value);
         if( res < 0)
-            insert( key,page_id, &(*leaf)->p_left, cmp);
+            inner_insert( key,page_id, &(*leaf)->p_left, cmp);
         else if( res > 0)
-            insert( key,page_id, &(*leaf)->p_right, cmp);
+            inner_insert( key,page_id, &(*leaf)->p_right, cmp);
         else                                            // key already exists
             printf ("Key '%s' already in tree\n", key);
     }
 }
 
 void insert(char *key , struct page_id_link_list* page_id ){
-    innner_insert(key , page_id ,p_root , (Compare)CmpStr);
+    inner_insert(key , page_id ,p_root , (Compare)CmpStr);
 }
 
 
@@ -57,9 +57,9 @@ struct node * inner_search(char* key, struct node* leaf, Compare cmp)  // no nee
     if( leaf != NULL ) {
         res = cmp(key, leaf->name_value);
         if( res < 0)
-            search( key, leaf->p_left, cmp);
+            inner_search( key, leaf->p_left, cmp);
         else if( res > 0)
-            search( key, leaf->p_right, cmp);
+            inner_search( key, leaf->p_right, cmp);
         else
             return leaf;    // string type
     }
