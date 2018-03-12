@@ -10,10 +10,8 @@ struct node {
     struct node *p_left;
     struct node *p_right;
 };
-struct node *p_root = NULL;
 
-//use typedef to make calling the compare function easier
-typedef int (*Compare)(const char *, const char *);
 
 //inserts elements into the tree
-void insert(char* key,struct page_id_link_list* page_id, struct node** leaf, Compare cmp);
+struct node * search(char* key);  // no need for **
+void insert(char *key , struct page_id_link_list* page_id );

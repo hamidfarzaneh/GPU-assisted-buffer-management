@@ -1,18 +1,18 @@
 #include "binary_tree.h"
 //struct for node
-struct node {
-    char *name_value;          
-    int page_id; 
-    struct node *p_left;
-    struct node *p_right;
-};
 struct node *p_root = NULL;
 
 //use typedef to make calling the compare function easier
 typedef int (*Compare)(const char *, const char *);
 
+//compares value of the new node against the previous node
+int CmpStr(const char *a, const char *b)
+{
+    return (strcmp (a, b));     // string comparison instead of pointer comparison
+}
+
 //inserts elements into the tree
-void insert(char* key,struct page_id_link_list* page_id, struct node** leaf, Compare cmp)
+void innner_insert(char* key,struct page_id_link_list* page_id, struct node** leaf, Compare cmp)
 {
     int res;
     if( *leaf == NULL ) {
@@ -33,11 +33,10 @@ void insert(char* key,struct page_id_link_list* page_id, struct node** leaf, Com
     }
 }
 
-//compares value of the new node against the previous node
-int CmpStr(const char *a, const char *b)
-{
-    return (strcmp (a, b));     // string comparison instead of pointer comparison
+void insert(char *key , struct page_id_link_list* page_id ){
+    innner_insert(key , page_id ,p_root , (Compare)CmpStr);
 }
+
 
 
 //recursive function to print out the tree inorder
@@ -50,8 +49,9 @@ void in_order(struct node *root)
     }
 }
 
+
 //searches elements in the tree
-struct node * search(char* key, struct node* leaf, Compare cmp)  // no need for **
+struct node * inner_search(char* key, struct node* leaf, Compare cmp)  // no need for **
 {
     int res;
     if( leaf != NULL ) {
@@ -67,6 +67,10 @@ struct node * search(char* key, struct node* leaf, Compare cmp)  // no need for 
     return NULL;
 }
 
+// this function is called from out . and then this function calls inner serach 
+struct node * search(char *key){
+    return inner_search(key , p_root ,(Compare) CmpStr );
+}
 
 void delete_tree(struct node** leaf)
 {
@@ -78,18 +82,3 @@ void delete_tree(struct node** leaf)
     }
 }
 
-
-// int main()
-// {
-//     char *temp1 = "test.txt";
-//     char *temp2 = "laskfjs.jpg";
-//     char *temp3 = "aflksdjf.mp3";
-//     insert(temp1,  &p_root, (Compare)CmpStr);
-//     insert(temp2,  &p_root, (Compare)CmpStr);
-//     insert(temp3,  &p_root, (Compare)CmpStr);
-
-//     struct node * t = search(temp1, p_root, (Compare)CmpStr);     // no need for **
-//     in_order(p_root);
-//     printf("%s" , t->value);
-//     return 0;
-// }
