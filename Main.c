@@ -2,11 +2,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
+#include <assert.h>
  
 /* Not technically required, but needed on some UNIX distributions */
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "cache_manager.c"
+#include "cache_manager.h"
+#include "descriptions.h"
 
 #define REQUEST_COUNT 5000
 
@@ -15,7 +18,7 @@ int main(int argc , char ** argv){
     int hashTableCapacity = 3000;
     
     printf("creating a cache queue with %d size \n" , cacheQueueCapacity);
-    printf("creating hashtable with %d size " , hashTable);
+    printf("creating hashtable with %d size " , hashTableCapacity);
 
     LRU_cache_init(cacheQueueCapacity , hashTableCapacity);
     
@@ -37,6 +40,13 @@ int main(int argc , char ** argv){
 }
 
 void runCommand(char * commandLine){
-    
+    char *token ;
+    token = strsep(&commandLine , " ");
+    printf("%s" , token);
+    token = strsep(&commandLine , " ");
+    printf("%s" , token);
+    token = strsep(&commandLine , " ");
+    printf("%s" , token);
+    getchar();
 }
 

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "cache_manager.h"
-#include "LRU.h"
 
 char * accessFile(char * name , int startPoint){
     struct node* temp = search(name);
@@ -11,7 +10,7 @@ char * accessFile(char * name , int startPoint){
         // so we should create it 
         page_data = loadPageFromDisk(name , startPoint);        
         int indexOfAddedPage = addPageToTheHashTable(page_data);           
-        struct page_id_link_list* newLinkList = reateNewPageIDLinkList(name , startPoint , indexOfAddedPage);
+        struct page_id_link_list* newLinkList = createNewPageIDLinkList(name , startPoint , indexOfAddedPage);
         insert(name , newLinkList); 
     } else {
         struct page_id_node* page_id_temp_head =  temp->page_id->head;
