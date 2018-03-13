@@ -1,11 +1,6 @@
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include "binary_tree.h"
-#include "LRU.h"
 #include "cache_manager.h"
-#include "page_id_node.h"
+#include "LRU.h"
 
 char * accessFile(char * name , int startPoint){
     struct node* temp = search(name);

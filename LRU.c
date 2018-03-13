@@ -1,21 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
- 
-/* Not technically required, but needed on some UNIX distributions */
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
- 
-/* Not technically required, but needed on some UNIX distributions */
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include "LRU.h"
+#include <stdlib.h>
 
 int getAvailableIDForHashTable(){
     if(stackPointer>0){
@@ -153,3 +137,7 @@ char * getPageFromCache(int page_id){
     }
 }
 
+void LRU_cache_init(int queueCapacity , int hashTableCapacity){
+    pageQueue = createQueue(queueCapacity);
+    hashTable = createHashTable(hashTableCapacity);
+}

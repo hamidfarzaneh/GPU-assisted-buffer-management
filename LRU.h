@@ -2,6 +2,15 @@
 #define QUEUE_SIZE 1000
 #define SUPPORTED_PAGE_COUNT_TO_SAVE 1000000
 #define MAX_STACK_SIZE 1000
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+ 
+/* Not technically required, but needed on some UNIX distributions */
+#include <sys/types.h>
+#include <sys/stat.h>
+
 
 int stackArray[MAX_STACK_SIZE] ;
 int biggestID= 0 ;
@@ -32,3 +41,4 @@ Hash* hashTable ;
 
 int addPageToTheHashTable(char * page_data);
 char * getPageFromCache(int page_id);
+void LRU_cache_init(int queueCapacity , int hashTableCapacity);
