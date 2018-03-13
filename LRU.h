@@ -31,3 +31,4 @@ Queue* pageQueue ;
 Hash* hashTable ;
 
 int addPageToTheHashTable(char * page_data);
+char * getPageFromCache(int page_id);

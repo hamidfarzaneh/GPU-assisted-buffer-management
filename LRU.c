@@ -140,7 +140,8 @@ char * getPageFromCache(int page_id){
     if(requestedPage == NULL){
         // CACHE MISS!!!
         // get the data from disk!
-
+        // it should not come here , but if it comes?!
+        printf("WTF???!!!!");
         return NULL;
 
     } else {

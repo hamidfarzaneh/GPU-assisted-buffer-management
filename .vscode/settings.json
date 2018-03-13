@@ -4,6 +4,7 @@
         "stdio.h": "c",
         "stat.h": "c",
         "unistd.h": "c",
-        "fcntl.h": "c"
+        "fcntl.h": "c",
+        "page_id_node.h": "c"
     }
 }

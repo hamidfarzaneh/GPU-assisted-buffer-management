@@ -1,0 +1,1 @@
+char * loadPageFromDisk(char *file_name , int startPoint);
