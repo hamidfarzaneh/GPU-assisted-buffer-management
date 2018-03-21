@@ -34,7 +34,7 @@ void inner_insert(char* key,struct page_id_link_list* page_id, struct node** lea
 }
 
 void insert(char *key , struct page_id_link_list* page_id ){
-    inner_insert(key , page_id ,p_root , (Compare)CmpStr);
+    inner_insert(key , page_id ,&p_root , (Compare)CmpStr);
 }
 
 

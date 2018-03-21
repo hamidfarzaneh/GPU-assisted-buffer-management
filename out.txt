@@ -1,0 +1,4 @@
+creating a cache queue with 1000 size 
+creating hashtable with 3000 size running line 1 of 5000
+running line 2 of 5000
+veyyoy

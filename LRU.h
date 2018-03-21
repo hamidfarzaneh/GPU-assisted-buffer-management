@@ -12,9 +12,7 @@
 #include <sys/stat.h>
 
 
-int stackArray[MAX_STACK_SIZE] ;
-int biggestID= 0 ;
-int stackPointer = 0;
+
 // A Qnode 
 typedef struct Qnode{
     char* data ; // the chunk of the buffer . 

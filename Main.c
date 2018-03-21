@@ -9,10 +9,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "cache_manager.h"
-#include "descriptions.h"
 
 #define REQUEST_COUNT 5000
 
+void runCommand(char * commandLine);
 int main(int argc , char ** argv){
     int cacheQueueCapacity = 1000;
     int hashTableCapacity = 3000;
@@ -25,28 +25,35 @@ int main(int argc , char ** argv){
     FILE * fp ;
     char * line ;
     size_t len = 0;
-    int lineCount = 1;
+    //int lineCount = 1;
     fp = fopen("READ_REQUESTS.txt" , "r");
     if(fp == NULL){
         printf("Request file not found!");
     } else {
         while((len= getline(&line , &len ,fp)!=-1)){
-            printf("running line %d of %d\n" , lineCount++ , REQUEST_COUNT);
-            printf("%s\n" , line);
+            // printf("running line %d of %d\n" , lineCount++ , REQUEST_COUNT);
+            runCommand(line);
         }
 
     }
+    getchar();
     return 0 ;
 }
 
 void runCommand(char * commandLine){
-    char *token ;
-    token = strsep(&commandLine , " ");
-    printf("%s" , token);
-    token = strsep(&commandLine , " ");
-    printf("%s" , token);
-    token = strsep(&commandLine , " ");
-    printf("%s" , token);
-    getchar();
+    char * fileName ;
+    char * command ;
+    char * startPoint ; 
+    fileName = strsep(&commandLine , " ");
+    command = strsep(&commandLine , " ");
+    startPoint = strsep(&commandLine , " ");
+
+    printf("\n%s %s %s" , fileName , command , startPoint);
+    if(strcmp(command,"read")==0){
+        // printf("reading ...\n");
+        accessFile(fileName , atoi(startPoint));
+    } else if (strcmp(command, "write") == 0){
+        printf("writing ... ");
+    }
 }
 

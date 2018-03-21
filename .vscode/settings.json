@@ -6,6 +6,7 @@
         "unistd.h": "c",
         "fcntl.h": "c",
         "page_id_node.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "cache_manager.h": "c"
     }
 }

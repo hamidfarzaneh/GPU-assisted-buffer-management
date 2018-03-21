@@ -1,6 +1,10 @@
 #include "LRU.h"
 #include <stdlib.h>
 
+int stackArray[MAX_STACK_SIZE] ;
+int biggestID= 0 ;
+int stackPointer = 0;
+
 int getAvailableIDForHashTable(){
     if(stackPointer>0){
         return stackArray[--stackPointer];
