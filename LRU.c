@@ -75,21 +75,26 @@ void dequeue(Queue* queue){
 
 
 void putAPageToTheRearOfTheQueue(Queue * queue ,Qnode* requestedPage){
-    requestedPage->prev->next = requestedPage -> next ;
+    
+    if(requestedPage->prev !=NULL){
+        requestedPage->prev->next = requestedPage -> next ;
+    }
+    
     if(requestedPage->next != NULL){ // if next of current page is not null
         requestedPage->next->prev = requestedPage->prev ;
     }
+    
     if(requestedPage == queue->rear){
-        queue->rear = requestedPage->prev ; 
-        queue->rear->next = NULL;
+        if(requestedPage->prev != NULL){
+            queue->rear = requestedPage->prev ; 
+            queue->rear->next = NULL;
+        }
     }
     requestedPage->next = queue->front ;
     requestedPage->prev = NULL;
     requestedPage->next->prev = requestedPage ;
 
     queue->front =requestedPage ; 
-    
-
 }
 
 int addPageToTheHashTable(char * page_data){
@@ -136,6 +141,9 @@ char * getPageFromCache(int page_id){
 
     } else {
         // put the page to the rear of the cache 
+        if(requestedPage == NULL){
+            printf("veeeeey");
+        }
         putAPageToTheRearOfTheQueue(pageQueue , requestedPage);
 
         return requestedPage->data;

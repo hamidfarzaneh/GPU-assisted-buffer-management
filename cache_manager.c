@@ -13,9 +13,12 @@ char * accessFile(char * name , int startPoint){
         int indexOfAddedPage = addPageToTheHashTable(page_data);           
         struct page_id_link_list* newLinkList = createNewPageIDLinkList(name , blockIndex, indexOfAddedPage);
         insert(name , newLinkList); 
+
     } else {
+       
         
-        struct page_id_node* page_id_temp_head =  temp->page_id->head;
+        struct page_id_node* page_id_temp_head =  temp->page_id_list->head;
+        // printf("^^%d %d^^^" , blockIndex , page_id_temp_head->blockIndex);
         while(page_id_temp_head!=NULL){
             if(page_id_temp_head->blockIndex== blockIndex){
                 break;
@@ -27,8 +30,8 @@ char * accessFile(char * name , int startPoint){
             printf("WTF!?");
             return NULL;
         }
+        // printf("$$ %d %d $$ " , page_id_temp_head->id , page_id_temp_head->blockIndex);
         page_data = getPageFromCache(page_id_temp_head->id);
-
     }
 
     return page_data;

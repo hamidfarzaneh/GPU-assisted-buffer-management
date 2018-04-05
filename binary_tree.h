@@ -5,7 +5,7 @@
 
 struct node {
     char *name_value;          
-    struct page_id_link_list* page_id; 
+    struct page_id_link_list* page_id_list; 
     struct node *p_left;
     struct node *p_right;
 };
