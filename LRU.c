@@ -76,7 +76,7 @@ void dequeue(Queue* queue){
 
 void putAPageToTheRearOfTheQueue(Queue * queue ,Qnode* requestedPage){
     requestedPage->prev->next = requestedPage -> next ;
-    if(requestedPage->next){
+    if(requestedPage->next != NULL){ // if next of current page is not null
         requestedPage->next->prev = requestedPage->prev ;
     }
     if(requestedPage == queue->rear){
@@ -88,6 +88,7 @@ void putAPageToTheRearOfTheQueue(Queue * queue ,Qnode* requestedPage){
     requestedPage->next->prev = requestedPage ;
 
     queue->front =requestedPage ; 
+    
 
 }
 
@@ -124,6 +125,7 @@ int addPageToTheHashTable(char * page_data){
     
 }
 char * getPageFromCache(int page_id){
+    
     Qnode* requestedPage= hashTable->array[page_id] ;
     if(requestedPage == NULL){
         // CACHE MISS!!!
@@ -135,6 +137,7 @@ char * getPageFromCache(int page_id){
     } else {
         // put the page to the rear of the cache 
         putAPageToTheRearOfTheQueue(pageQueue , requestedPage);
+
         return requestedPage->data;
 
 

@@ -1,7 +1,7 @@
 // it's just a link list
 struct page_id_node{
     char *name_value ; 
-    int blockIndex;
+    int blockIndex ;   
     int id;
 
     struct page_id_node* next;

@@ -8,12 +8,13 @@ char * accessFile(char * name , int startPoint){
     if(temp == NULL){
         // there is no node in the tree related to this file 
         // so we should load the file from disk then add it to cache 
-        // so we should create it 
+        // so w should create it 
         page_data = loadPageFromDisk(name , blockIndex);        
         int indexOfAddedPage = addPageToTheHashTable(page_data);           
         struct page_id_link_list* newLinkList = createNewPageIDLinkList(name , blockIndex, indexOfAddedPage);
         insert(name , newLinkList); 
     } else {
+        
         struct page_id_node* page_id_temp_head =  temp->page_id->head;
         while(page_id_temp_head!=NULL){
             if(page_id_temp_head->blockIndex== blockIndex){
